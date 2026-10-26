@@ -421,6 +421,15 @@ namespace SeldomArchipelago.Systems
                 case "Reward: Fisherman's Pocket Guide": GiveItem(ItemID.FishermansGuide); break;
                 case "Reward: Weather Radio": GiveItem(ItemID.WeatherRadio); break;
                 case "Reward: Sextant": GiveItem(ItemID.Sextant); break;
+                // Bulk rewards (stackable); names must match the apworld
+                case "Reward: Iron Bars": GiveItem(ItemID.IronBar, 20); break;
+                case "Reward: Gold Bars": GiveItem(ItemID.GoldBar, 20); break;
+                case "Reward: Hellstone Bars": GiveItem(ItemID.HellstoneBar, 20); break;
+                case "Reward: Molten Pickaxe": GiveItem(ItemID.MoltenPickaxe); break;
+                case "Reward: Mining Potions": GiveItem(ItemID.MiningPotion, 5); break;
+                case "Reward: Swiftness Potions": GiveItem(ItemID.SwiftnessPotion, 5); break;
+                case "Reward: Spelunker Potions": GiveItem(ItemID.SpelunkerPotion, 5); break;
+                case "Reward: Recall Potions": GiveItem(ItemID.RecallPotion, 5); break;
                 case "Reward: Band of Regeneration": GiveItem(ItemID.BandofRegeneration); break;
                 case "Reward: Celestial Magnet": GiveItem(ItemID.CelestialMagnet); break;
                 case "Reward: Nature's Gift": GiveItem(ItemID.NaturesGift); break;
@@ -849,7 +858,7 @@ namespace SeldomArchipelago.Systems
             }
         }
 
-        void GiveItem(int item) => GiveItem(item, player => player.QuickSpawnItem(player.GetSource_GiftOrReward(), item, 1));
+        void GiveItem(int item, int stack = 1) => GiveItem(item, player => player.QuickSpawnItem(player.GetSource_GiftOrReward(), item, stack));
         public void GiveItem<T>() where T : ModItem => GiveItem(ModContent.ItemType<T>());
 
         int[] baseCoins = { 15, 20, 25, 30, 40, 50, 70, 100 };
