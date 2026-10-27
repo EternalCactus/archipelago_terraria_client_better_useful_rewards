@@ -51,6 +51,10 @@ namespace SeldomArchipelago.Systems
             // playing Hardcore and wants to receive all the rewards again when making a new player/
             // world.
             public List<int> receivedRewards = new List<int>();
+            // Number of times each progressive reward (keyed by its Archipelago item name) has
+            // been received in this world, so repeat copies of the same item name give the next
+            // tier instead of reapplying the first one.
+            public Dictionary<string, int> progressiveRewardCounts = new();
             // List of flags that have been received but not triggered
             public List<string> suspendedFlags = new List<string>();
             // All NPCs that have been randomized.
@@ -99,6 +103,11 @@ namespace SeldomArchipelago.Systems
         {
             world.collectedItems = tag.ContainsKey("ApCollectedItems") ? tag.Get<int>("ApCollectedItems") : 0;
             world.receivedRewards = tag.ContainsKey("ApReceivedRewards") ? tag.Get<List<int>>("ApReceivedRewards") : new();
+            world.progressiveRewardCounts = tag.ContainsKey("ApProgressiveRewardKeys")
+                ? tag.Get<List<string>>("ApProgressiveRewardKeys")
+                    .Zip(tag.Get<List<int>>("ApProgressiveRewardCounts"), (key, count) => (key, count))
+                    .ToDictionary(pair => pair.key, pair => pair.count)
+                : new();
             world.suspendedFlags = tag.ContainsKey("ApSuspendedFlags") ? tag.Get<List<string>>("ApSuspendedFlags") : new();
             world.receivedNPCs = tag.ContainsKey("ApReceivedNPCs") ? tag.Get<List<int>>("ApReceivedNPCs").ToHashSet() : new();
             world.randomizedNPCs = tag.ContainsKey("ApRandomizedNPCs") ? tag.Get<List<int>>("ApRandomizedNPCs").ToImmutableHashSet() : null;
@@ -426,6 +435,14 @@ namespace SeldomArchipelago.Systems
                 case "Reward: Gold Bars": GiveItem(ItemID.GoldBar, 20); break;
                 case "Reward: Hellstone Bars": GiveItem(ItemID.HellstoneBar, 20); break;
                 case "Reward: Molten Pickaxe": GiveItem(ItemID.MoltenPickaxe); break;
+                case "Reward: Progressive Pickaxe":
+                    GiveProgressiveItem(item, new[]
+                    {
+                        WorldGen.crimson ? ItemID.DeathbringerPickaxe : ItemID.NightmarePickaxe,
+                        ItemID.MoltenPickaxe,
+                        ItemID.Drax,
+                    });
+                    break;
                 case "Reward: Mining Potions": GiveItem(ItemID.MiningPotion, 5); break;
                 case "Reward: Swiftness Potions": GiveItem(ItemID.SwiftnessPotion, 5); break;
                 case "Reward: Spelunker Potions": GiveItem(ItemID.SpelunkerPotion, 5); break;
@@ -474,6 +491,7 @@ namespace SeldomArchipelago.Systems
                 case "Reward: Red Counterweight": GiveItem(ItemID.RedCounterweight); break;
                 case "Reward: Yoyo Glove": GiveItem(ItemID.YoYoGlove); break;
                 case "Reward: Coins": GiveCoins(); break;
+                case "Reward: Progressive Money": GiveProgressiveMoney(item, progressiveMoneyTiers); break;
                 case "Reward: Cosmolight": ModContent.GetInstance<CalamitySystem>().GiveCosmolight(); break;
                 case "Reward: Diving Helmet": GiveItem(ItemID.DivingHelmet); break;
                 case "Reward: Jellyfish Necklace": GiveItem(ItemID.JellyfishNecklace); break;
@@ -599,6 +617,8 @@ namespace SeldomArchipelago.Systems
         {
             tag["ApCollectedItems"] = world.collectedItems;
             tag["ApReceivedRewards"] = world.receivedRewards;
+            tag["ApProgressiveRewardKeys"] = world.progressiveRewardCounts.Keys.ToList();
+            tag["ApProgressiveRewardCounts"] = world.progressiveRewardCounts.Values.ToList();
             tag["ApSuspendedFlags"] = world.suspendedFlags;
             tag["ApReceivedNPCs"] = world.receivedNPCs.ToList();
             if (world.NPCRandoActive())
@@ -861,23 +881,48 @@ namespace SeldomArchipelago.Systems
         void GiveItem(int item, int stack = 1) => GiveItem(item, player => player.QuickSpawnItem(player.GetSource_GiftOrReward(), item, stack));
         public void GiveItem<T>() where T : ModItem => GiveItem(ModContent.ItemType<T>());
 
+        // Gives the next tier of a progressive reward. `key` should be the Archipelago item name,
+        // used to persist how many copies of it have been received in this world so far. Extra
+        // copies beyond `tiers.Length` just re-give the last tier.
+        void GiveProgressiveItem(string key, int[] tiers, int stack = 1)
+        {
+            world.progressiveRewardCounts.TryGetValue(key, out var received);
+            GiveItem(tiers[Math.Min(received, tiers.Length - 1)], stack);
+            world.progressiveRewardCounts[key] = received + 1;
+        }
+
         int[] baseCoins = { 15, 20, 25, 30, 40, 50, 70, 100 };
 
         void GiveCoins()
         {
             var flagCount = 0;
             foreach (var flag in flags) if (CheckFlag(flag)) flagCount++;
-            var count = baseCoins[flagCount % 8] * (int)Math.Pow(10, flagCount / 8);
+            GiveMoney(baseCoins[flagCount % 8] * (int)Math.Pow(10, flagCount / 8));
+        }
 
-            var platinum = count / 10000;
-            var gold = count % 10000 / 100;
-            var silver = count % 100;
+        // Spawns coins totaling `value` silver coins (100 silver = 1 gold, 100 gold = 1 platinum).
+        void GiveMoney(int value)
+        {
+            var platinum = value / 10000;
+            var gold = value % 10000 / 100;
+            var silver = value % 100;
             GiveItem(null, player =>
             {
                 if (platinum > 0) player.QuickSpawnItem(player.GetSource_GiftOrReward(), ItemID.PlatinumCoin, platinum);
                 if (gold > 0) player.QuickSpawnItem(player.GetSource_GiftOrReward(), ItemID.GoldCoin, gold);
                 if (silver > 0) player.QuickSpawnItem(player.GetSource_GiftOrReward(), ItemID.SilverCoin, silver);
             });
+        }
+
+        // Silver-coin-equivalent payouts for "Reward: Progressive Money"'s 3 tiers: 1 gold, 10
+        // gold, 1 platinum. Extra copies beyond 3 just re-give the platinum payout.
+        static readonly int[] progressiveMoneyTiers = { 100, 1000, 10000 };
+
+        void GiveProgressiveMoney(string key, int[] tiers)
+        {
+            world.progressiveRewardCounts.TryGetValue(key, out var received);
+            GiveMoney(tiers[Math.Min(received, tiers.Length - 1)]);
+            world.progressiveRewardCounts[key] = received + 1;
         }
 
         public List<int> ReceivedRewards() => world.receivedRewards;
