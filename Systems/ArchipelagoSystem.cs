@@ -963,9 +963,9 @@ namespace SeldomArchipelago.Systems
             });
         }
 
-        // Silver-coin-equivalent payouts for "Reward: Progressive Money"'s 3 tiers: 1 gold, 10
-        // gold, 1 platinum. Extra copies beyond 3 just re-give the platinum payout.
-        static readonly int[] progressiveMoneyTiers = { 100, 1000, 10000 };
+        // Silver-coin-equivalent payouts for "Reward: Progressive Money"'s 5 tiers: 1 gold, 10
+        // gold, 1 platinum, 10 platinum, 100 platinum. Extra copies beyond 5 just re-give the 100 platinum payout.
+        static readonly int[] progressiveMoneyTiers = { 100, 1000, 10000, 100000, 1000000 };
 
         void GiveProgressiveMoney(string key, int[] tiers)
         {
