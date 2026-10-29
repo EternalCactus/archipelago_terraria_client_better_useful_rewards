@@ -443,6 +443,9 @@ namespace SeldomArchipelago.Systems
                         ItemID.Drax,
                     });
                     break;
+                case "Reward: Progressive Melee Armor": GiveProgressiveSet(item, progressiveMeleeArmorTiers); break;
+                case "Reward: Progressive Ranged Armor": GiveProgressiveSet(item, progressiveRangedArmorTiers); break;
+                case "Reward: Progressive Magic Armor": GiveProgressiveSet(item, progressiveMagicArmorTiers); break;
                 case "Reward: Mining Potions": GiveItem(ItemID.MiningPotion, 5); break;
                 case "Reward: Swiftness Potions": GiveItem(ItemID.SwiftnessPotion, 5); break;
                 case "Reward: Spelunker Potions": GiveItem(ItemID.SpelunkerPotion, 5); break;
@@ -890,6 +893,48 @@ namespace SeldomArchipelago.Systems
             GiveItem(tiers[Math.Min(received, tiers.Length - 1)], stack);
             world.progressiveRewardCounts[key] = received + 1;
         }
+
+        // Like GiveProgressiveItem, but each tier is a full armor set whose pieces are all given
+        // (and registered with the collection shop) together.
+        void GiveProgressiveSet(string key, int[][] tiers)
+        {
+            world.progressiveRewardCounts.TryGetValue(key, out var received);
+            foreach (var piece in tiers[Math.Min(received, tiers.Length - 1)]) GiveItem(piece);
+            world.progressiveRewardCounts[key] = received + 1;
+        }
+
+        static readonly int[][] progressiveMeleeArmorTiers =
+        {
+            new int[] { ItemID.GoldHelmet, ItemID.GoldChainmail, ItemID.GoldGreaves },
+            new int[] { ItemID.ShadowHelmet, ItemID.ShadowScalemail, ItemID.ShadowGreaves },
+            new int[] { ItemID.MoltenHelmet, ItemID.MoltenBreastplate, ItemID.MoltenGreaves },
+            new int[] { ItemID.MythrilHelmet, ItemID.MythrilChainmail, ItemID.MythrilGreaves },
+            new int[] { ItemID.HallowedMask, ItemID.HallowedPlateMail, ItemID.HallowedGreaves },
+            new int[] { ItemID.ChlorophyteMask, ItemID.ChlorophytePlateMail, ItemID.ChlorophyteGreaves },
+            new int[] { ItemID.SolarFlareHelmet, ItemID.SolarFlareBreastplate, ItemID.SolarFlareLeggings },
+        };
+
+        static readonly int[][] progressiveRangedArmorTiers =
+        {
+            new int[] { ItemID.NinjaHood, ItemID.NinjaShirt, ItemID.NinjaPants },
+            new int[] { ItemID.NecroHelmet, ItemID.NecroBreastplate, ItemID.NecroGreaves },
+            new int[] { ItemID.CobaltMask, ItemID.CobaltBreastplate, ItemID.CobaltLeggings },
+            new int[] { ItemID.MythrilHat, ItemID.MythrilChainmail, ItemID.MythrilGreaves },
+            new int[] { ItemID.HallowedHelmet, ItemID.HallowedPlateMail, ItemID.HallowedGreaves },
+            new int[] { ItemID.ShroomiteHeadgear, ItemID.ShroomiteBreastplate, ItemID.ShroomiteLeggings },
+            new int[] { ItemID.VortexHelmet, ItemID.VortexBreastplate, ItemID.VortexLeggings },
+        };
+
+        static readonly int[][] progressiveMagicArmorTiers =
+        {
+            new int[] { ItemID.WizardHat, ItemID.RubyRobe },
+            new int[] { ItemID.JungleHat, ItemID.JungleShirt, ItemID.JunglePants },
+            new int[] { ItemID.MeteorHelmet, ItemID.MeteorSuit, ItemID.MeteorLeggings },
+            new int[] { ItemID.MythrilHood, ItemID.MythrilChainmail, ItemID.MythrilGreaves },
+            new int[] { ItemID.HallowedHeadgear, ItemID.HallowedPlateMail, ItemID.HallowedGreaves },
+            new int[] { ItemID.SpectreMask, ItemID.SpectreRobe, ItemID.SpectrePants },
+            new int[] { ItemID.NebulaHelmet, ItemID.NebulaBreastplate, ItemID.NebulaLeggings },
+        };
 
         int[] baseCoins = { 15, 20, 25, 30, 40, 50, 70, 100 };
 

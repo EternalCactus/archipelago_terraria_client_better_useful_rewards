@@ -8,6 +8,8 @@ namespace SeldomArchipelago.Command
         public override string Command => "apcollect";
         public override CommandType Type => CommandType.World;
         public override string Description => "Collects an item without telling the Archipelago server. This is a cheat.";
+        // Item names are matched exactly, so the input must keep its casing.
+        public override bool IsCaseSensitive => true;
 
         public override void Action(CommandCaller caller, string input, string[] args)
         {
