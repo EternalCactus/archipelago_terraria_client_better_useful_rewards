@@ -436,7 +436,7 @@ namespace SeldomArchipelago.Systems
                 case "Reward: Hellstone Bars": GiveItem(ItemID.HellstoneBar, 20); break;
                 case "Reward: Molten Pickaxe": GiveItem(ItemID.MoltenPickaxe); break;
                 case "Reward: Progressive Pickaxe":
-                    GiveProgressiveItem(item, new[]
+                    GiveProgressiveItem(item, new int[]
                     {
                         WorldGen.crimson ? ItemID.DeathbringerPickaxe : ItemID.NightmarePickaxe,
                         ItemID.MoltenPickaxe,

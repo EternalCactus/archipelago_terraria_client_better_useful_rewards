@@ -205,7 +205,7 @@ namespace SeldomArchipelago.Systems
         public void CalamityOnKillRavager() => CalamityOnKill<CalamityMod.NPCs.Ravager.RavagerBody>(SeldomArchipelago.ravagerBodyOnKill);
         public void CalamityOnKillAstrumDeus() => CalamityOnKill<CalamityMod.NPCs.AstrumDeus.AstrumDeusHead>(SeldomArchipelago.astrumDeusHeadOnKill, new float[] { 3, 0, 0, 0 });
         public void CalamityOnKillProfanedGuardians() => CalamityOnKill<CalamityMod.NPCs.ProfanedGuardians.ProfanedGuardianCommander>(SeldomArchipelago.profanedGuardianCommanderOnKill);
-        public void CalamityOnKillTheDragonfolly() => CalamityOnKill<CalamityMod.NPCs.Bumblebirb.Bumblefuck>(SeldomArchipelago.bumblefuckOnKill);
+        public void CalamityOnKillTheDragonfolly() => CalamityOnKill<CalamityMod.NPCs.Bumblebirb.Dragonfolly>(SeldomArchipelago.bumblefuckOnKill);
         public void CalamityOnKillProvidenceTheProfanedGoddess() => CalamityOnKill<CalamityMod.NPCs.Providence.Providence>(SeldomArchipelago.providenceOnKill);
         public void CalamityOnKillStormWeaver() => CalamityOnKill<CalamityMod.NPCs.StormWeaver.StormWeaverHead>(SeldomArchipelago.stormWeaverHeadOnKill);
         public void CalamityOnKillCeaselessVoid() => CalamityOnKill<CalamityMod.NPCs.CeaselessVoid.CeaselessVoid>(SeldomArchipelago.ceaselessVoidOnKill);
