@@ -438,9 +438,13 @@ namespace SeldomArchipelago.Systems
                 case "Reward: Progressive Pickaxe":
                     GiveProgressiveItem(item, new int[]
                     {
-                        WorldGen.crimson ? ItemID.DeathbringerPickaxe : ItemID.NightmarePickaxe,
+                        ItemID.GoldPickaxe,
+                        ItemID.NightmarePickaxe,
                         ItemID.MoltenPickaxe,
-                        ItemID.Drax,
+                        ItemID.CobaltPickaxe,
+                        ItemID.MythrilPickaxe,
+                        ItemID.SpectrePickaxe,
+                        ItemID.Picksaw,
                     });
                     break;
                 case "Reward: Progressive Melee Armor": GiveProgressiveSet(item, progressiveMeleeArmorTiers); break;
