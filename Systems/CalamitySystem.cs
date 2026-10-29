@@ -54,7 +54,7 @@ namespace SeldomArchipelago.Systems
         public void GiveAnechoicPlating() => ModContent.GetInstance<ArchipelagoSystem>().GiveItem<CalamityMod.Items.Accessories.AnechoicPlating>();
         public void GiveIronBoots() => ModContent.GetInstance<ArchipelagoSystem>().GiveItem<CalamityMod.Items.Accessories.IronBoots>();
         public void GiveSpritGlyph() => ModContent.GetInstance<ArchipelagoSystem>().GiveItem<CalamityMod.Items.Accessories.SpiritGlyph>();
-        public void GiveAbyssalAmulet() => ModContent.GetInstance<ArchipelagoSystem>().GiveItem<CalamityMod.Items.Accessories.AbyssalAmulet>();
+        public void GiveAbyssalAmulet() => ModContent.GetInstance<ArchipelagoSystem>().GiveItem<CalamityMod.Items.Accessories.SeaSpiritAmulet>();
 
         public void CalamityPostUpdateWorld()
         {
