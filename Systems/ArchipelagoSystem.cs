@@ -115,6 +115,10 @@ namespace SeldomArchipelago.Systems
 
         public override void OnWorldLoad()
         {
+            // Drop any connection left over from a previous load (e.g. one that threw halfway
+            // through), otherwise it keeps printing every server message alongside the new one.
+            Reset();
+
             // Needed for achievements to work right
             typeof(SocialAPI).GetField("_mode", BindingFlags.Static | BindingFlags.NonPublic).SetValue(null, SocialMode.None);
 
