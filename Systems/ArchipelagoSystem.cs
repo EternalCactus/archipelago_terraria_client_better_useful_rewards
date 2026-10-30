@@ -155,7 +155,7 @@ namespace SeldomArchipelago.Systems
                 Chat(text);
             };
 
-            if ((bool)success.SlotData["deathlink"])
+            if (success.SlotData.TryGetValue("deathlink", out var deathlinkValue) && (bool)deathlinkValue)
             {
                 session.deathlink = session.session.CreateDeathLinkService();
                 session.deathlink.EnableDeathLink();
@@ -163,7 +163,10 @@ namespace SeldomArchipelago.Systems
                 session.deathlink.OnDeathLinkReceived += ReceiveDeathlink;
             }
 
-            string[] randomizedNPCnames = ((JArray)success.SlotData["randomize_npcs"]).ToObject<string[]>();
+            // Older apworlds don't send this key, which means NPC randomization is off.
+            string[] randomizedNPCnames = success.SlotData.TryGetValue("randomize_npcs", out var randomizeNpcsValue)
+                ? ((JArray)randomizeNpcsValue).ToObject<string[]>()
+                : Array.Empty<string>();
             if (randomizedNPCnames.Length > 0)
             {
                 world.randomizedNPCs = (from name in randomizedNPCnames select npcNameToID[name]).ToImmutableHashSet();
